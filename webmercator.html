@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Web Mercator Map (EPSG:3857)</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+    h3 { margin: 10px; text-align: center; }
+    #map { height: 500px; width: 100%; }
+  </style>
+</head>
+<body>
+  <h3>Web Mercator Projection (EPSG:3857)</h3>
+  <div id="map"></div>
+
+  <script>
+    // Inisialisasi peta
+    var map = L.map('map').setView([-6.921, 106.931], 15);
+
+    // Tile dari OpenStreetMap
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Ikon khusus Flood Sensor 💧
+    var floodIcon = L.icon({
+      iconUrl: 'https://cdn-icons-png.flaticon.com/512/727/727790.png',
+      iconSize: [32, 32],
+      iconAnchor: [16, 32],
+      popupAnchor: [0, -32]
+    });
+
+    // Titik GeoJSON
+    var geojson = {
+      "type": "FeatureCollection",
+      "features": [
+        {
+          "type": "Feature",
+          "properties": { "name": "Flood Sensor - Cikole" },
+          "geometry": { "type": "Point", "coordinates": [106.931, -6.921] }
+        }
+      ]
+    };
+
+    // Marker in peta
+    L.geoJSON(geojson, {
+      pointToLayer: function (feature, latlng) {
+        return L.marker(latlng, { icon: floodIcon });
+      }
+    }).bindPopup(function (layer) {
+      return `<b>${layer.feature.properties.name}</b><br>Coordinates: ${layer.feature.geometry.coordinates[1]}, ${layer.feature.geometry.coordinates[0]}`;
+    }).addTo(map);
+  </script>
+</body>
+</html>

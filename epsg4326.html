@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Geographic Coordinate System (EPSG:4326)</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+    h3 { margin: 10px; text-align: center; }
+    #map { height: 500px; width: 100%; }
+  </style>
+</head>
+<body>
+  <h3>Geographic Coordinate System (EPSG:4326)</h3>
+  <div id="map"></div>
+
+  <script>
+    // Inisialisasi peta dengan CRS EPSG:4326
+    var map = L.map('map', {
+      crs: L.CRS.EPSG4326,
+      center: [-6.921, 106.931],
+      zoom: 4
+    });
+
+    // 🔹 WMS Layer dari GeoServer (mendukung EPSG:4326)
+    L.tileLayer.wms('https://ahocevar.com/geoserver/wms', {
+      layers: 'ne:NE1_HR_LC_SR_W_DR',
+      format: 'image/png',
+      transparent: false,
+      attribution: '© Natural Earth via GeoServer (EPSG:4326)',
+      crs: L.CRS.EPSG4326
+    }).addTo(map);
+
+    // 💧 Ikon Flood Sensor
+    var floodIcon = L.icon({
+      iconUrl: 'https://cdn-icons-png.flaticon.com/512/727/727790.png',
+      iconSize: [32, 32],
+      iconAnchor: [16, 32],
+      popupAnchor: [0, -32]
+    });
+
+    // 📍 Titik GeoJSON Flood Sensor
+    var geojson = {
+      "type": "FeatureCollection",
+      "features": [
+        {
+          "type": "Feature",
+          "properties": { "name": "Flood Sensor - Cikole" },
+          "geometry": { "type": "Point", "coordinates": [106.931, -6.921] }
+        }
+      ]
+    };
+
+    // marker in peta
+    L.geoJSON(geojson, {
+      pointToLayer: function (feature, latlng) {
+        return L.marker(latlng, { icon: floodIcon });
+      }
+    }).bindPopup(function (layer) {
+      return `<b>${layer.feature.properties.name}</b><br>
+              Coordinates: ${layer.feature.geometry.coordinates[1]}, 
+              ${layer.feature.geometry.coordinates[0]}`;
+    }).addTo(map);
+  </script>
+</body>
+</html>
